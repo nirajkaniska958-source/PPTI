@@ -498,7 +498,7 @@ function generateDimensionAnalysis(scores) {
 // 👇👇👇 将这里的链接替换为你刚才在 Cloudflare 复制的 Worker 链接 👇👇👇
 const WORKER_API_URL = "/comments";
 
-
+const systemComments = [];
 
 // 1. 加载并渲染评论
 // 🌟 无底洞版：加载与渲染评论
