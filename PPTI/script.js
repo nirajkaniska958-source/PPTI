@@ -759,3 +759,15 @@ function injectRarity(type) {
         document.getElementById('result-rarity-fill').style.width = r + '%';
     }, 100);
 }
+
+// 3. 切换选项卡 (全部病患 / 同源病例)
+function toggleFilter(btn) {
+    // 移除所有按钮的 active 状态
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    // 给当前点击的按钮加上 active 状态
+    btn.classList.add('active');
+
+    // 判断点的是哪个，传递参数给 loadComments
+    const filterType = btn.innerText.includes('同源') ? 'same' : 'all';
+    loadComments(filterType);
+}
