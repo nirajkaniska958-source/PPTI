@@ -562,7 +562,8 @@ async function loadComments(filterType = 'all') {
 
         // 生成底部按钮
         const deleteHtml = isMine ? `<button class="delete-btn" onclick="deleteMyComment('${c.id}')">[ 销毁此切片 ]</button>` : '<span></span>';
-        const likeHtml = `<button class="like-btn ${hasLiked ? 'liked' : ''}" onclick="likeComment('${c.id}')" ${hasLiked ? 'disabled' : ''}>♥ 共鸣 ${likesCount}</button>`;
+        // 🌟 替换掉原来的 likeHtml 这一行
+        const likeHtml = `<button class="like-btn ${hasLiked ? 'liked' : ''}" onclick="likeComment('${c.id}')">♥ 共鸣 ${likesCount}</button>`;
 
         item.innerHTML = `
             <div class="comment-header">
@@ -815,26 +816,33 @@ async function deleteMyComment(commentId) {
     }
 }
 
-// 🌟 触发共鸣（点赞）的函数
+// 🌟 触发或取消共鸣的函数
 async function likeComment(commentId) {
     let myLikes = JSON.parse(localStorage.getItem('ppti_my_likes') || '{}');
-    if (myLikes[commentId]) return; // 已经点过了，防止重复点击
+    const isCurrentlyLiked = myLikes[commentId] === true;
 
-    // 1. 乐观更新：先在本地假装点赞成功，直接刷新列表，让体验绝对丝滑
-    myLikes[commentId] = true;
+    // 1. 乐观更新：根据当前状态反向操作
+    if (isCurrentlyLiked) {
+        delete myLikes[commentId]; // 撤回共鸣，拔掉钥匙
+    } else {
+        myLikes[commentId] = true; // 产生共鸣，留下钥匙
+    }
     localStorage.setItem('ppti_my_likes', JSON.stringify(myLikes));
+    
+    // 强制刷新列表，让颜色和数字瞬间变化
+    loadComments('all'); 
 
-    // 强制把这条评论的赞数+1并重新排序渲染
-    loadComments('all');
-
-    // 2. 真实发送请求给后端
+    // 2. 真实发送请求给后端终端
     try {
         await fetch(WORKER_API_URL, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ id: commentId })
+            body: JSON.stringify({ 
+                id: commentId,
+                action: isCurrentlyLiked ? 'unlike' : 'like' // 🌟 告诉系统是加还是减
+            })
         });
     } catch (e) {
-        console.error("共鸣信号微弱，未传达至系统", e);
+        console.error("信号微弱，未传达至系统", e);
     }
 }
