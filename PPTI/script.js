@@ -521,7 +521,7 @@ async function loadComments(filterType = 'all') {
     const countElement = document.getElementById('total-comments-count');
     if (countElement) {
         // 我们依然保留一个基础盘（比如 14208），加上真实的评论数，让数字更具规模感
-        const totalCount = 14208 + realComments.length;
+        const totalCount = 0 + realComments.length;
         countElement.innerText = `已收录 ${totalCount.toLocaleString()} 份病理切片`;
     }
 
