@@ -289,7 +289,7 @@ function generateResult() {
     // 🌟 蟑螂：在多选模式下很容易各项数值飙高，所以把阈值从 6 提高到 10，防止蟑螂泛滥
     else if (scores.J > 10 && scores.I > 10 && scores.N > 10 && scores.S > 10) { resultType = "XIAOQIANG"; }
     // 🌟 最后再判定狂徒，且矛盾阈值提升到 16
-    else if (mode === 'multi' && contradictionCount >= 16) { resultType = "CHAOS"; }
+    else if (mode === 'multi' && contradictionCount >= 25) { resultType = "CHAOS"; }
 
     if (!personas[resultType]) resultType = "ESTJ";
 
