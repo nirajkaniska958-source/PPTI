@@ -284,10 +284,12 @@ function generateResult() {
     ];
     let resultType = code.join('');
 
-    if (mode === 'multi' && contradictionCount >= 8) { resultType = "CHAOS"; }
+    if (scores.E === scores.I && scores.S === scores.N && scores.T === scores.F && scores.J === scores.P) { resultType = "BLACKHOLE"; }
     else if (scores.T > 10 && scores.F === 0 && scores.J > 8) { resultType = "LORD"; }
-    else if (scores.E === 0 && scores.I === 0 && scores.S === 0 && scores.N === 0) { resultType = "BLACKHOLE"; }
-    else if (scores.J > 6 && scores.I > 6 && scores.N > 6 && scores.S > 6) { resultType = "XIAOQIANG"; }
+    // 🌟 蟑螂：在多选模式下很容易各项数值飙高，所以把阈值从 6 提高到 10，防止蟑螂泛滥
+    else if (scores.J > 10 && scores.I > 10 && scores.N > 10 && scores.S > 10) { resultType = "XIAOQIANG"; }
+    // 🌟 最后再判定狂徒，且矛盾阈值提升到 16
+    else if (mode === 'multi' && contradictionCount >= 16) { resultType = "CHAOS"; }
 
     if (!personas[resultType]) resultType = "ESTJ";
 
