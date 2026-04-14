@@ -496,7 +496,7 @@ function generateDimensionAnalysis(scores) {
 // ==========================================
 
 // 👇👇👇 将这里的链接替换为你刚才在 Cloudflare 复制的 Worker 链接 👇👇👇
-const WORKER_API_URL = "https://comment.nirajkaniska958.workers.dev";
+const WORKER_API_URL = "/comments";
 
 
 
