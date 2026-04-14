@@ -1234,3 +1234,46 @@ strong {
     text-decoration: underline;
     text-underline-offset: 4px;
 }
+
+/* 🌟 评论底部操作区排版 */
+.comment-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+/* 🌟 重置销毁按钮的上边距，因为它现在装在 flex 盒子里了 */
+.delete-btn {
+    margin-top: 0;
+}
+
+/* 🌟 共鸣(点赞)按钮样式 */
+.like-btn {
+    background: transparent;
+    border: 1px solid #ccc;
+    color: #888;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-family: var(--serif-font);
+    cursor: pointer;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.like-btn:hover:not(:disabled) {
+    border-color: #666;
+    color: #333;
+}
+
+/* 点赞后的锁死状态（病态红） */
+.like-btn.liked {
+    border-color: #b00;
+    color: #b00;
+    background: rgba(176, 0, 0, 0.05);
+    cursor: default;
+}
