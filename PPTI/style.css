@@ -1,0 +1,1236 @@
+:root {
+    --bg-color: #FAF9F6;
+    --text-color: #2C2C2C;
+    --line-color: #1A1A1A;
+    --monospace-font: "Courier New", Courier, monospace;
+    --serif-font: Georgia, "Times New Roman", "Songti SC", "STSong", "华文宋体", "Noto Serif CJK SC", "SimSun", "宋体", serif;
+    --positive-multiply: multiply;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--serif-font);
+    margin: 0;
+    padding: 0;
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* 🌟 开屏终端 */
+#intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.intro-content {
+    width: 85%;
+    max-width: 400px;
+    text-align: left;
+}
+
+#terminal-screen {
+    font-family: var(--monospace-font);
+    font-size: 14px;
+    color: #fff;
+    line-height: 2;
+    margin-bottom: 20px;
+}
+
+.intro-content .enter-btn {
+    display: inline-block;
+    margin: 20px 0 0 0;
+    background: transparent;
+    border: none;
+    color: #fff;
+    padding: 10px 0;
+    font-size: 14px;
+    font-family: var(--monospace-font);
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 8px;
+    opacity: 0.8;
+}
+
+.intro-content .enter-btn:hover {
+    opacity: 1;
+    color: #00fff9;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+strong {
+    font-weight: normal !important;
+}
+
+.view {
+    display: none;
+    padding: 5px 35px 40px 35px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    border: 2px solid #000;
+    background-color: var(--bg-color);
+    position: relative;
+}
+
+.view.active {
+    display: block;
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.text-body {
+    padding: 0 15px;
+}
+
+.clinical-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 55px;
+    border-bottom: 1px solid #e5e5e5;
+    padding-bottom: 1px;
+    font-size: 10px;
+    letter-spacing: 0px;
+    font-family: var(--monospace-font);
+    white-space: nowrap;
+    color: #666;
+}
+
+.box-icon {
+    font-size: 0.8em;
+    vertical-align: top;
+    color: var(--text-color);
+    margin-right: 8px;
+}
+
+.landing-main {
+    text-align: center;
+    padding: 10px 0;
+}
+
+.title-section {
+    margin-bottom: 10vh;
+    text-align: center;
+}
+
+.landing-title {
+    font-size: 4.5rem;
+    font-family: "Songti SC Light", var(--serif-font);
+    font-weight: 300;
+    letter-spacing: 8.5px;
+    margin: 0 0 3px 0;
+    padding-left: 8.5px;
+    white-space: nowrap;
+    display: block;
+    -webkit-text-stroke: 0.6px var(--bg-color);
+}
+
+.landing-subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    letter-spacing: 6px;
+    font-weight: normal;
+}
+
+.landing-quote-block {
+    margin-bottom: 30vh;
+}
+
+.hero-quote {
+    font-style: italic;
+    color: #222;
+    font-size: 1rem;
+    line-height: 2.2;
+    margin: 0;
+    font-weight: normal;
+    text-align: center;
+}
+
+.nowrap-line {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.clinical-preamble {
+    margin-bottom: 60px;
+    padding: 0 15px;
+}
+
+.smooth-details summary {
+    list-style: none;
+    outline: none;
+    cursor: pointer;
+    text-align: center;
+}
+
+.smooth-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.preamble-intro {
+    font-size: 0.85rem;
+    color: #444;
+    margin: 0 0 20px 0;
+    letter-spacing: 1px;
+}
+
+.animated-lines {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    margin: 0 auto 10px auto;
+}
+
+.animated-lines .line {
+    height: 1px;
+    background-color: var(--text-color);
+    opacity: 0;
+}
+
+.line-1 {
+    width: 45px;
+    animation: flashSeq 2s infinite 0s;
+}
+
+.line-2 {
+    width: 25px;
+    animation: flashSeq 2s infinite 0.4s;
+}
+
+.line-3 {
+    width: 10px;
+    animation: flashLine 2s infinite 0.8s;
+}
+
+@keyframes flashSeq {
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes flashLine {
+    0% {
+        opacity: 0;
+    }
+
+    30% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.preamble-content {
+    text-align: justify;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 2;
+    padding-top: 20px;
+    border-top: 1px dashed #ccc;
+    margin-top: 20px;
+    animation: fadeInDown 0.5s ease;
+    font-family: var(--serif-font);
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.smooth-details[open] .animated-lines {
+    display: none;
+}
+
+.smooth-details[open] summary {
+    cursor: default;
+}
+
+.preamble-en {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 25px;
+    font-family: var(--monospace-font);
+}
+
+.preamble-content p {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.preamble-highlight {
+    font-style: italic;
+    color: #222;
+    border-left: 2px solid var(--line-color);
+    padding-left: 12px;
+    margin: 25px 0;
+    font-size: 0.95rem;
+}
+
+.preamble-ending {
+    text-align: center;
+    margin-top: 40px !important;
+    margin-bottom: 0 !important;
+    color: #222;
+    font-size: 1rem;
+}
+
+.selector-section {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.mode-switch {
+    display: inline-flex;
+    border: 1px solid var(--line-color);
+}
+
+.mode-switch button {
+    background: transparent;
+    border: none;
+    padding: 10px 25px;
+    color: var(--text-color);
+    font-family: var(--serif-font);
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.mode-switch button.active {
+    background: var(--text-color);
+    color: var(--bg-color);
+}
+
+/* 🌟 按钮布局 */
+.action-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.cta-button {
+    background: var(--text-color);
+    border: none;
+    color: var(--bg-color);
+    padding: 15px 0;
+    font-size: 1.05rem;
+    cursor: pointer;
+    font-family: var(--serif-font);
+    letter-spacing: 2px;
+    width: 100%;
+    transition: transform 0.2s;
+}
+
+.cta-button:active {
+    transform: scale(0.98);
+}
+
+.capture-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.cta-button.mini {
+    width: auto;
+    min-width: 140px;
+    padding: 12px 10px;
+    font-size: 0.85rem;
+}
+
+.secondary-btn {
+    background: transparent;
+    border: 1px solid var(--line-color);
+    color: var(--text-color);
+    padding: 12px 0;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-family: var(--serif-font);
+    letter-spacing: 2px;
+    width: 100%;
+}
+
+.restart-link {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 0.85rem;
+    font-family: var(--serif-font);
+    letter-spacing: 4px;
+    cursor: pointer;
+    margin-top: 25px;
+    padding: 10px 0;
+    display: block;
+    width: 100%;
+}
+
+.landing-footer {
+    margin-top: 15px;
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+.quiet-reminder {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+    letter-spacing: 2px;
+    margin-bottom: 80px;
+    font-family: var(--serif-font);
+}
+
+.footer-line {
+    width: 100%;
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 0 auto 30px auto;
+}
+
+.footer-info p {
+    font-size: 10px;
+    color: #999;
+    letter-spacing: 1.5px;
+    margin: 10px 0;
+    font-family: var(--serif-font);
+}
+
+.quiz-main {
+    margin-top: 10px;
+    padding: 0 10px;
+}
+
+#quiz-page .clinical-header {
+    margin-bottom: 30px;
+}
+
+.question-title {
+    font-size: 1.05rem;
+    font-weight: normal !important;
+    margin-bottom: 25px;
+    line-height: 1.8;
+    text-align: justify;
+    font-family: var(--serif-font);
+}
+
+.option-item {
+    border: 1px solid var(--line-color);
+    margin-bottom: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    font-family: var(--serif-font);
+    text-align: justify;
+}
+
+.option-item.selected {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
+
+.nav-btns {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.nav-btn-primary {
+    background: var(--text-color);
+    color: var(--bg-color);
+    border: none;
+    padding: 15px 0;
+    font-size: 1rem;
+    font-family: var(--serif-font);
+    cursor: pointer;
+    letter-spacing: 1px;
+    width: 100%;
+}
+
+.nav-btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.nav-btn-secondary {
+    background: transparent;
+    color: #888;
+    border: 1px solid #e0e0e0;
+    padding: 10px 30px;
+    font-size: 0.85rem;
+    font-family: var(--serif-font);
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: all 0.2s ease;
+}
+
+.nav-btn-secondary:active {
+    background-color: #f5f5f5;
+    border-color: #ccc;
+}
+
+.identity-header-centered {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.id-prefix {
+    font-size: 0.85rem;
+    color: #888;
+    font-style: italic;
+    margin: 0 0 10px 0;
+    font-family: var(--serif-font);
+    letter-spacing: 1px;
+}
+
+.id-persona-zh {
+    font-size: 3.6rem;
+    font-weight: normal !important;
+    margin: 0 0 5px 0;
+    line-height: 1;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.id-persona-en {
+    font-size: 1.8rem;
+    color: #222;
+    margin: 0 0 15px 0;
+    letter-spacing: 6px;
+    font-weight: normal !important;
+    font-family: var(--serif-font);
+}
+
+.id-prototype {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
+}
+
+.character-container-centered {
+    padding: 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-avatar {
+    max-width: 100%;
+    max-height: 250px;
+    mix-blend-mode: var(--positive-multiply);
+    object-fit: contain;
+}
+
+.quote-container {
+    margin: 35px 0 20px 0;
+    padding: 0;
+}
+
+.result-slogan {
+    font-style: italic;
+    font-size: 1.05rem;
+    font-weight: normal;
+    color: #333;
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+    display: block;
+    padding: 0 10px;
+    text-wrap: balance;
+    line-height: 1.9;
+}
+
+/* 🌟 模因感染率进度条：在Slogan下方 */
+.rarity-container {
+    margin: 45px auto 40px auto;
+    width: 90%;
+}
+
+.rarity-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--monospace-font);
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.rarity-track {
+    width: 100%;
+    height: 2px;
+    background: #e0e0e0;
+}
+
+.rarity-fill {
+    height: 100%;
+    background: #111;
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rarity-desc {
+    font-size: 0.6rem;
+    color: #888;
+    margin: 8px 0 0 0;
+    text-align: right;
+    letter-spacing: 1px;
+    font-family: var(--serif-font);
+    font-style: italic;
+}
+
+.elegant-divider {
+    text-align: center;
+    color: #999;
+    font-size: 1.2rem;
+    margin: 30px 0 60px 0;
+}
+
+.report-section,
+.dimension-map-section,
+.social-map-section {
+    margin-bottom: 60px;
+    text-align: left;
+}
+
+.section-title {
+    font-weight: normal !important;
+    font-size: 1.15rem;
+    margin-bottom: 25px;
+    letter-spacing: 1px;
+    font-family: var(--serif-font);
+    line-height: 1.4;
+}
+
+.section-en {
+    display: block;
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 4px;
+    padding-left: 20px;
+    letter-spacing: 1px;
+    font-style: italic;
+    font-family: var(--monospace-font);
+}
+
+.pathology-text {
+    color: #333;
+    text-align: justify;
+    font-size: 0.88rem;
+    font-family: var(--serif-font);
+}
+
+.radar-container {
+    width: 100%;
+    margin: 20px 0;
+    padding: 10px 0;
+}
+
+.dimension-analysis {
+    font-size: 0.82rem;
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+    font-family: var(--serif-font);
+    text-align: justify;
+    border-left: 2px solid #1a1a1a;
+}
+
+
+/* 🌟 灵魂溯源：回归极简纯粹的高级哑光黑底 */
+/* 🌟 灵魂溯源：实体黑卡厚度感 */
+.soul-origin {
+    background: linear-gradient(135deg, #1c1c1c 0%, #050505 100%);
+    /* 保持干净的深黑渐变 */
+    color: #e0e0e0;
+    padding: 45px 25px;
+    margin: 40px -10px;
+    border-radius: 4px;
+    position: relative;
+    border: 1px solid #1a1a1a;
+
+    /* 核心 3D 逻辑：
+       1. 顶部一根极细的白光，模拟纸张边缘厚度 
+       2. 下方深沉的外阴影，让卡片像浮在纸面上
+       3. 内部微弱的漫反射阴影 */
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        0 12px 35px rgba(0, 0, 0, 0.15),
+        0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 顶部增加一个微弱的装饰，强化系统档案感 */
+.soul-origin::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 4px 4px 0 0;
+}
+
+.origin-text {
+    color: #e0e0e0;
+    text-align: justify;
+    font-size: 0.90rem;
+    line-height: 2;
+    margin-bottom: 0;
+    font-style: normal;
+}
+
+/* 🌟 社交图谱：处方签样式 */
+.social-map {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.map-card {
+    flex: 1;
+    border: none;
+    /* 彻底去掉生硬的黑边框 */
+    background: #f2f2f2;
+    /* 浅灰色处方纸底色 */
+    padding: 18px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    border-radius: 2px;
+    /* 较小的圆角更硬朗 */
+    position: relative;
+
+    /* 核心 3D 逻辑：
+       1. 顶部的黑色窄条模拟“夹子”或“胶水粘合位”
+       2. 右下方微弱的阴影，让标签产生“翘起”或“厚度”的错觉 */
+    border-top: 3px solid #111;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.04),
+        0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease;
+}
+
+/* 装饰性虚线，模拟撕拉线，增加细节 */
+.map-card::after {
+    content: '';
+    position: absolute;
+    top: 42px;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    border-bottom: 1px dashed #ccc;
+    opacity: 0.8;
+}
+
+/* 稍微优化卡片内文字的层级 */
+.map-card span:first-child {
+    letter-spacing: 2px;
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.map-card strong {
+    font-size: 1.1rem;
+    color: #111;
+    font-family: var(--serif-font);
+    font-weight: normal !important;
+    margin-top: 8px;
+}
+
+.final-diagnosis-msg {
+    text-align: center;
+    margin-bottom: 0px;
+    padding: 0 13px;
+    margin-top: 50px;
+}
+
+.final-diagnosis-msg p {
+    text-align: center;
+    margin: 40px 0;
+    font-size: 0.9rem;
+    color: #4b4b4b;
+    font-family: var(--serif-font);
+    letter-spacing: 1px;
+    line-height: 2;
+}
+
+.final-diagnosis-msg .highlight {
+    text-align: center;
+    color: #4b4b4b;
+    font-family: var(--serif-font);
+    font-size: 0.9rem;
+    margin-top: 100px;
+    line-height: 2.3;
+    font-style: italic;
+}
+
+/* 🌟 条形码区：底部截图封边 */
+.barcode-container {
+    text-align: center;
+    margin: 60px 0 20px 0;
+}
+
+.barcode-title {
+    font-family: var(--monospace-font);
+    font-size: 9px;
+    color: #bbb;
+    margin-bottom: 8px;
+    letter-spacing: 2px;
+}
+
+/* 🌟 真正的动态条形码容器 */
+.barcode-bars {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30px;
+    /* 统一的条形码高度 */
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+/* 动态生成的单根线条样式 */
+.barcode-line {
+    background-color: #5a5a5a;
+    /* 👈 颜色改为褪色的高级灰，去掉死黑的突兀感 */
+    opacity: 0.9;
+}
+
+.barcode-text {
+    font-family: var(--monospace-font);
+    font-size: 9px;
+    color: #999;
+    letter-spacing: 1px;
+}
+
+.comments-section {
+    margin-top: 20px;
+    margin-bottom: 50px;
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.comment-form input,
+.comment-form textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    background: transparent;
+    padding: 12px 15px;
+    font-family: var(--serif-font);
+    font-size: 0.95rem;
+    color: var(--text-color);
+}
+
+.comment-form input:focus,
+.comment-form textarea:focus {
+    outline: none;
+    border-color: var(--text-color);
+}
+
+.submit-comment-btn {
+    background: var(--text-color);
+    color: var(--bg-color);
+    border: none;
+    padding: 12px 0;
+    font-size: 0.95rem;
+    font-family: var(--serif-font);
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.comment-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 15px;
+}
+
+.filter-btn {
+    background: transparent;
+    border: none;
+    color: #999;
+    font-family: var(--serif-font);
+    font-size: 0.9rem;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.filter-btn.active {
+    color: var(--text-color);
+    font-weight: bold;
+    border-bottom: 1px solid var(--line-color);
+    padding-bottom: 2px;
+}
+
+.sort-box .sort-select {
+    background: transparent;
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    font-family: var(--serif-font);
+    font-size: 0.8rem;
+    color: #666;
+    border-radius: 2px;
+    outline: none;
+}
+
+.comment-count {
+    font-size: 0.75rem;
+    color: #aaa;
+    text-align: left;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.comment-item {
+    border-bottom: 1px dashed #e5e5e5;
+    padding-bottom: 20px;
+    animation: fadeInDown 0.4s ease;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.comment-author {
+    font-family: var(--monospace-font);
+    color: #444;
+    font-weight: bold;
+}
+
+.comment-content {
+    font-size: 0.95rem;
+    color: #333;
+    text-align: justify;
+}
+
+.load-more-btn {
+    background: transparent;
+    border: none;
+    color: #666;
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    font-family: var(--serif-font);
+    font-size: 0.85rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 999;
+    display: none;
+    overflow-y: auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    max-width: 430px;
+    margin: 0 auto;
+    position: relative;
+    padding-bottom: 60px;
+}
+
+.modal-close {
+    position: absolute;
+    top: -30px;
+    right: 0;
+    background: transparent;
+    border: none;
+    font-size: 2.2rem;
+    color: #999;
+    cursor: pointer;
+    padding: 10px;
+    line-height: 1;
+    z-index: 10;
+}
+
+.modal-header-text {
+    text-align: center;
+    margin-bottom: 40px;
+    margin-top: 10px;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-family: var(--monospace-font);
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+.modal-sub-title {
+    font-size: 1rem;
+    margin: 5px 0 10px 0;
+    font-family: var(--serif-font);
+    letter-spacing: 2px;
+}
+
+.modal-desc {
+    font-size: 0.8rem;
+    color: #888;
+    font-style: italic;
+    margin: 0;
+}
+
+.archive-section-title {
+    font-size: 1.1rem;
+    text-align: center;
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid var(--line-color);
+    padding-bottom: 10px;
+}
+
+.danger-title {
+    color: #800;
+    border-color: #800;
+}
+
+.archive-item {
+    border: 1px solid #ccc;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: #fff;
+}
+
+.archive-header {
+    padding: 12px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.archive-code {
+    font-family: var(--monospace-font);
+    font-size: 0.75rem;
+    color: #888;
+    min-width: 50px;
+}
+
+.archive-name {
+    flex-grow: 1;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    padding-left: 10px;
+}
+
+.archive-toggle {
+    font-size: 1.2rem;
+    color: #999;
+    transition: transform 0.2s;
+    line-height: 1;
+}
+
+.archive-detail {
+    display: none;
+    padding: 0 15px 20px 15px;
+    border-top: 1px dashed #eee;
+    margin-top: 5px;
+    padding-top: 15px;
+}
+
+.archive-item.open .archive-detail {
+    display: block;
+    animation: fadeInDown 0.3s ease;
+}
+
+.archive-item.open .archive-toggle {
+    transform: rotate(45deg);
+}
+
+.archive-detail-content {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+
+.archive-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    padding: 5px;
+    background: #fafafa;
+}
+
+.archive-text-group {
+    flex: 1;
+}
+
+.archive-archetype {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0 0 5px 0;
+}
+
+.archive-quote {
+    font-style: italic;
+    font-size: 0.9rem;
+    color: #222;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+}
+
+.archive-text {
+    font-size: 0.85rem;
+    color: #444;
+    text-align: justify;
+    margin: 15px 0 0 0;
+}
+
+.anomaly-list .archive-item {
+    background-color: #111;
+    border-color: #111;
+}
+
+.anomaly-list .archive-code {
+    color: #555;
+}
+
+.anomaly-list .archive-name {
+    color: #fff;
+}
+
+.anomaly-list .archive-toggle {
+    color: #555;
+}
+
+.anomaly-list .archive-detail {
+    border-top-color: #333;
+}
+
+.redacted-warning {
+    color: #a00;
+    font-family: var(--monospace-font);
+    font-size: 0.8rem;
+    text-align: center;
+    margin-bottom: 15px;
+    border: 1px dashed #a00;
+    padding: 5px;
+}
+
+.redacted-text {
+    color: transparent;
+    text-shadow: 0 0 6px rgba(200, 200, 200, 0.6);
+    user-select: none;
+    font-size: 0.85rem;
+    text-align: justify;
+    margin: 0;
+}
+
+/* 🌟 销毁切片按钮样式 */
+.delete-btn {
+    background: transparent;
+    border: none;
+    color: #4e0404;
+    /* 暗红色，带着警告意味 */
+    font-size: 0.75rem;
+    font-family: var(--serif-font);
+    cursor: pointer;
+    margin-top: 12px;
+    padding: 0;
+    letter-spacing: 2px;
+    opacity: 0.8;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.delete-btn:hover {
+    opacity: 1;
+    color: #4e0404;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+}
