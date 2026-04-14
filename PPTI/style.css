@@ -77,6 +77,7 @@ strong {
     font-weight: normal !important;
 }
 
+/* 1. 找到 .view 修改最小高度 */
 .view {
     display: none;
     padding: 5px 35px 40px 35px;
@@ -84,7 +85,11 @@ strong {
     width: 100%;
     max-width: 430px;
     margin: 0 auto;
-    min-height: 100vh;
+    
+    /* 👇 增加这一行，优先使用 dvh */
+    min-height: 100vh; 
+    min-height: 100dvh; 
+    
     border: 2px solid #000;
     background-color: var(--bg-color);
     position: relative;
