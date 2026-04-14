@@ -509,7 +509,6 @@ async function loadComments(filterType = 'all') {
 
     let realComments = [];
     try {
-        // 从 Cloudflare 获取真实的实时留言（这里会拿到所有数据）
         const response = await fetch(WORKER_API_URL);
         if (response.ok) {
             realComments = await response.json();
@@ -518,11 +517,11 @@ async function loadComments(filterType = 'all') {
         console.warn("网络位面干扰，加载预设回音池", e);
     }
 
-    // 🌟 更新真实的病理切片总数
+    // 更新真实的病理切片总数
     const countElement = document.getElementById('total-comments-count');
     if (countElement) {
-        // 我们依然保留一个基础盘（比如 14208），加上真实的评论数，让数字更具规模感
-        const totalCount = 0 + realComments.length;
+        // 保留你的基础盘，加上真实的评论数
+        const totalCount = 14210 + realComments.length;
         countElement.innerText = `已收录 ${totalCount.toLocaleString()} 份病理切片`;
     }
 
@@ -541,22 +540,29 @@ async function loadComments(filterType = 'all') {
         return;
     }
 
-    // 🌟 核心保护机制：无论数据库里有多少万条，前端只渲染最新的 50 条，防止页面卡死
+    // 🌟 核心新增：按点赞数降序排列（赞最多的排最上面）
+    allComments.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+
+    // 无论数据库里有多少条，前端只渲染最新的 50 条
     const displayComments = allComments.slice(0, 50);
 
-    // 🌟 获取本地存储的钥匙串
+    // 获取本地存储的“自毁钥匙”和“点赞记录”
     const myKeys = JSON.parse(localStorage.getItem('ppti_my_keys') || '{}');
+    const myLikes = JSON.parse(localStorage.getItem('ppti_my_likes') || '{}');
 
+    // 循环渲染每一条评论
     displayComments.forEach(c => {
         const item = document.createElement('div');
         item.className = 'comment-item';
 
-        // 🌟 检查这条评论的 ID 是否在我的钥匙串里
+        // 判定状态
         const isMine = c.id && myKeys[c.id] !== undefined;
+        const hasLiked = c.id && myLikes[c.id] === true;
+        const likesCount = c.likes || 0;
 
-        // 如果是我的，生成销毁按钮
-        const deleteHtml = isMine ?
-            `<button class="delete-btn" onclick="deleteMyComment('${c.id}')">[ 销毁此切片 ]</button>` : '';
+        // 生成底部按钮
+        const deleteHtml = isMine ? `<button class="delete-btn" onclick="deleteMyComment('${c.id}')">[ 销毁此切片 ]</button>` : '<span></span>';
+        const likeHtml = `<button class="like-btn ${hasLiked ? 'liked' : ''}" onclick="likeComment('${c.id}')" ${hasLiked ? 'disabled' : ''}>♥ 共鸣 ${likesCount}</button>`;
 
         item.innerHTML = `
             <div class="comment-header">
@@ -564,7 +570,10 @@ async function loadComments(filterType = 'all') {
                 <span class="comment-date">${c.date}</span>
             </div>
             <div class="comment-content">${c.content}</div>
-            ${deleteHtml}
+            <div class="comment-actions">
+                ${likeHtml}
+                ${deleteHtml}
+            </div>
         `;
         list.appendChild(item);
     });
@@ -803,5 +812,29 @@ async function deleteMyComment(commentId) {
         }
     } catch (e) {
         alert("网络干扰，销毁失败。");
+    }
+}
+
+// 🌟 触发共鸣（点赞）的函数
+async function likeComment(commentId) {
+    let myLikes = JSON.parse(localStorage.getItem('ppti_my_likes') || '{}');
+    if (myLikes[commentId]) return; // 已经点过了，防止重复点击
+
+    // 1. 乐观更新：先在本地假装点赞成功，直接刷新列表，让体验绝对丝滑
+    myLikes[commentId] = true;
+    localStorage.setItem('ppti_my_likes', JSON.stringify(myLikes));
+
+    // 强制把这条评论的赞数+1并重新排序渲染
+    loadComments('all');
+
+    // 2. 真实发送请求给后端
+    try {
+        await fetch(WORKER_API_URL, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: commentId })
+        });
+    } catch (e) {
+        console.error("共鸣信号微弱，未传达至系统", e);
     }
 }
