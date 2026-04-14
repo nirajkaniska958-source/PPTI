@@ -498,14 +498,7 @@ function generateDimensionAnalysis(scores) {
 // 👇👇👇 将这里的链接替换为你刚才在 Cloudflare 复制的 Worker 链接 👇👇👇
 const WORKER_API_URL = "comment.nirajkaniska958.workers.dev";
 
-// 系统内置预设回音（营造冷启动社区氛围）
-const systemComments = [
-    { name: "No.013 / 吗喽", date: "10分钟前", content: "这破班是一天也上不下去了，但测完感觉这世界就是一个巨大的草台班子，大家都病得不轻，突然释怀了。", type: "ENFP" },
-    { name: "匿名病患", date: "2小时前", content: "确实，承认自己有病才是最伟大的反叛。只要我不觉得尴尬，尴尬的就是别人。", type: "INTJ" },
-    { name: "观察者_007", date: "5小时前", content: "诊断书字字诛心。把我的保护色扒得干干净净。这根本不是测试，是审判。", type: "INFJ" },
-    { name: "No.005 / 卷王", date: "半天前", content: "就算是精神病，我也要做病得最成功的那一个。不说了，回去继续改PPT了。", type: "ESTJ" },
-    { name: "未具名实体", date: "1天前", content: "想在那个叫‘黑洞’的档案里长眠不醒...", type: "BLACKHOLE" }
-];
+
 
 // 1. 加载并渲染评论
 // 🌟 无底洞版：加载与渲染评论
