@@ -771,3 +771,37 @@ function toggleFilter(btn) {
     const filterType = btn.innerText.includes('同源') ? 'same' : 'all';
     loadComments(filterType);
 }
+
+// 🌟 销毁切片的专属函数（必须放在最外层，不能嵌套在别的函数里！）
+async function deleteMyComment(commentId) {
+    if (!confirm("确定要永久抹除这份病理记录吗？此操作不可逆。")) return;
+
+    const myKeys = JSON.parse(localStorage.getItem('ppti_my_keys') || '{}');
+    const token = myKeys[commentId];
+
+    if (!token) {
+        alert("自毁密钥已丢失，无法越权操作。");
+        return;
+    }
+
+    try {
+        const response = await fetch(WORKER_API_URL, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id: commentId, token: token })
+        });
+
+        if (response.ok) {
+            // 删除成功后，把本地的废弃钥匙也扔掉
+            delete myKeys[commentId];
+            localStorage.setItem('ppti_my_keys', JSON.stringify(myKeys));
+
+            // 重新刷新列表
+            await loadComments('all');
+        } else {
+            alert("权限验证失败或切片已不存在。");
+        }
+    } catch (e) {
+        alert("网络干扰，销毁失败。");
+    }
+}
