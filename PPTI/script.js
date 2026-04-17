@@ -293,6 +293,18 @@ function generateResult() {
 
     if (!personas[resultType]) resultType = "ESTJ";
 
+    // 👇👇👇 🌟 核心新增：向后台静默上报此次确诊数据 🌟 👇👇👇
+    try {
+        fetch(WORKER_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action: 'record_result', result: resultType })
+        });
+    } catch (e) {
+        console.warn("临床数据上传系统异常");
+    }
+    // 👆👆👆 🌟 新增结束 🌟 👆👆👆
+
     document.getElementById('quiz-page').classList.remove('active');
     document.getElementById('analyzing-overlay').style.display = 'flex';
     window.scrollTo(0, 0);
@@ -830,16 +842,16 @@ async function likeComment(commentId) {
         myLikes[commentId] = true; // 产生共鸣，留下钥匙
     }
     localStorage.setItem('ppti_my_likes', JSON.stringify(myLikes));
-    
+
     // 强制刷新列表，让颜色和数字瞬间变化
-    loadComments('all'); 
+    loadComments('all');
 
     // 2. 真实发送请求给后端终端
     try {
         await fetch(WORKER_API_URL, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
+            body: JSON.stringify({
                 id: commentId,
                 action: isCurrentlyLiked ? 'unlike' : 'like' // 🌟 告诉系统是加还是减
             })
