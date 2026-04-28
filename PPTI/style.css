@@ -7,14 +7,17 @@
     --positive-multiply: multiply;
 }
 
-body {
+body,
+html {
     background-color: var(--bg-color);
     color: var(--text-color);
     font-family: var(--serif-font);
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
     line-height: 1.9;
     -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* 🌟 开屏终端 */
@@ -41,7 +44,8 @@ body {
 #terminal-screen {
     font-family: var(--monospace-font);
     font-size: 14px;
-    color: #fff;
+    color: #888;
+    /* 🌟 修正：从纯白改为柔和的灰，不再刺眼 */
     line-height: 2;
     margin-bottom: 20px;
 }
@@ -85,11 +89,11 @@ strong {
     width: 100%;
     max-width: 430px;
     margin: 0 auto;
-    
+
     /* 👇 增加这一行，优先使用 dvh */
-    min-height: 100vh; 
-    min-height: 100dvh; 
-    
+    min-height: 100vh;
+    min-height: 100dvh;
+
     border: 2px solid #000;
     background-color: var(--bg-color);
     position: relative;
@@ -428,7 +432,8 @@ strong {
     color: #888;
     font-style: italic;
     letter-spacing: 2px;
-    margin-bottom: 80px;
+    /* 🌟 【间距】：修改这里可以调整 “更多测试敬请期待” 距离下方分割线的距离 */
+    margin-bottom: 60px;
     font-family: var(--serif-font);
 }
 
@@ -436,7 +441,8 @@ strong {
     width: 100%;
     height: 1px;
     background-color: #e0e0e0;
-    margin: 0 auto 30px auto;
+    /* 🌟 【间距】：这里的第三个数值 (30px) 控制分割线距离下方版权文字的距离 */
+    margin: 0 auto 10px auto;
 }
 
 .footer-info p {
@@ -1281,4 +1287,597 @@ strong {
     color: #b00;
     background: rgba(176, 0, 0, 0.05);
     cursor: default;
+}
+
+/* ========================================== */
+/* 🌟 WHO-OLOGY HUB PAGE (BRAND ENTRY) 🌟     */
+/* ========================================== */
+
+#hub-page {
+    background-color: #050505;
+    /* Deep black for the whole hub page */
+    padding: 0;
+    color: #fff;
+    min-height: 100vh;
+    max-width: 100%;
+    /* Override the view limits */
+    display: none;
+    /* Hide when not active */
+    flex-direction: column;
+}
+
+#hub-page.active {
+    display: flex;
+}
+
+/* p5.js canvas container */
+#p5-canvas-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.hub-hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 10;
+    padding: 0 20px;
+    box-sizing: border-box;
+}
+
+.hub-logo {
+    position: absolute;
+    /* 🌟 修改这里的数值可以调整顶部 who-ology 的上下边距 (比如改回 0% 或者调成 15%) */
+    top: 10%;
+    left: 0;
+    width: 100%;
+    /* padding-top 也可以用来微调边距 */
+    padding-top: 0px;
+
+    /* 🌟 修改这里的数值可以调整 who-ology 文字的大小 */
+    font-size: 4.5rem;
+
+    font-family: var(--serif-font);
+    font-weight: 300;
+    letter-spacing: 12px;
+    /* 🌟 降低字体亮度，解决深色背景下白得“发亮/刺眼”的问题 */
+    color: #b3b3b3;
+    /* 取消了原先的发光阴影，让字显得更实、更内敛 */
+    text-shadow: none;
+    opacity: 0;
+    /* Hidden initially */
+    box-sizing: border-box;
+}
+
+#hub-page.start-animation .hub-logo {
+    /* 🌟 修正：放慢速度，让遮罩推屏效果更优雅、更有氛围感 */
+    animation: logoReveal 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    clip-path: inset(0 0 0 0);
+}
+
+@keyframes logoReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+        clip-path: inset(0 0 100% 0);
+        /* 从底部遮罩中滑出 */
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+/* 🌟 烟雾遮挡视觉错觉：出场从模糊到清晰，然后循环被烟雾遮挡 */
+@keyframes textFoggy {
+    0% {
+        opacity: 0;
+        filter: blur(5px);
+    }
+
+    /* 第一段清晰期：保持约 3s (15%) */
+    20%,
+    35% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+
+    /* 浓雾弥漫期：保持原有呼吸深度 */
+    50% {
+        opacity: 0.35;
+        filter: blur(2px);
+    }
+
+    /* 第二段清晰期：保持约 3s (15%) */
+    65%,
+    80% {
+        opacity: 1;
+        filter: blur(0px);
+    }
+
+    100% {
+        opacity: 0;
+        filter: blur(5px);
+    }
+}
+
+.hub-manifesto {
+    position: absolute;
+    /* 🌟 修改这里的数值可以调整中间那段话的上下位置 (50% 代表绝对居中，可改成 40% 或 60%) */
+    top: 55%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+
+    /* 🌟 修改这里的数值可以调整中间那段话的文字大小 */
+    font-size: 1rem;
+
+    /* 🌟 同样降低这边的字体亮度，使用更深的灰，符合“深渊”气质 */
+    color: #999999;
+    line-height: 2.4;
+    font-style: italic;
+    font-family: var(--serif-font);
+    letter-spacing: 4px;
+    font-weight: normal;
+    opacity: 0;
+    /* Hidden initially */
+}
+
+#hub-page.start-animation .hub-manifesto {
+    /* 🌟 【浓雾动画速度】：修改这里的 35s。数值越小，雾气流动和呼吸感就越快；数值越大越慢（目前是 35秒一个循环） */
+    animation: textFoggy 20s ease-in-out 0.5s infinite both;
+}
+
+.scroll-indicator {
+    position: absolute;
+    bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    /* Hidden initially */
+}
+
+#hub-page.start-animation .scroll-indicator {
+    /* 🌟 同步浓雾出场效果：使用和中间文字一样的 textFoggy 动画，同时保留箭头的上下跳动 */
+    animation: textFoggy 20s ease-in-out 0.5s infinite both, floatBounce 2s infinite ease-in-out;
+}
+
+.scroll-text {
+    font-size: 0.75rem;
+    letter-spacing: 4px;
+    color: #888;
+    margin-bottom: 10px;
+    font-family: var(--monospace-font);
+}
+
+.scroll-arrow {
+    width: 1px;
+    height: 30px;
+    background-color: #888;
+}
+
+@keyframes floatBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(10px);
+    }
+}
+
+.test-entries-section {
+    position: relative;
+    z-index: 10;
+
+    /* 🌟 【卡片离顶部的距离】：修改这里的第一个数值 (40px) 可以控制整个内容区距离顶部的留白。
+       注意：如果你下面使用了 justify-content: center;（垂直居中），这个顶部间距可能会被居中效果覆盖。
+       如果想完全由自己控制距离顶部的边距，请把下面的 justify-content 删掉或改为 flex-start */
+    padding: 100px 20px 80px 20px;
+
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+
+    /* 🌟 【整体上下位置】如果觉得整个卡片+底部文字离最上面太远/太近，可以修改或删除这一行
+       center: 垂直居中 / flex-start: 靠上 / flex-end: 靠下 */
+    justify-content: center;
+
+    width: 100%;
+    /* 🌟 确保最小高度是屏幕高度，防止内容太少导致无法完全滚到顶部，从而露出上半截背景 */
+    min-height: 100vh;
+    box-sizing: border-box;
+    background-color: #050505;
+}
+
+/* --- Slanted Accordion Container --- */
+.split-container {
+    position: relative;
+    width: 100%;
+    height: 380px;
+    border: 1px solid #333;
+    background: #0a0a0a;
+    overflow: hidden;
+    will-change: transform;
+    /* Hidden by default until IntersectionObserver fires */
+    opacity: 0;
+}
+
+/* Triggered by IntersectionObserver: make container visible */
+.split-container.card-revealed {
+    opacity: 1;
+}
+
+/* Left panel slides in from the left edge — meets at the slant */
+.split-container.card-revealed .split-left {
+    /* 🌟 【卡片初次合拢速度】：修改这里的 2s。数值越小，两张卡片从两侧合拢的速度就越快 */
+    animation: cardSlideInLeft 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Right panel slides in from the right edge — meets at the slant */
+.split-container.card-revealed .split-right {
+    /* 🌟 【卡片初次合拢速度】：同样修改这里的 2s。后面的 0.08s 是右侧卡片的微小延迟，让合拢更有层次感 */
+    animation: cardSlideInRight 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.05s forwards;
+}
+
+@keyframes cardSlideInLeft {
+    from {
+        clip-path: polygon(0 0, 0% 0, 0% 100%, 0 100%);
+    }
+
+    to {
+        clip-path: polygon(0 0, 55% 0, 45% 100%, 0 100%);
+    }
+}
+
+@keyframes cardSlideInRight {
+    from {
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+    }
+
+    to {
+        clip-path: polygon(55% 0, 100% 0, 100% 100%, 45% 100%);
+    }
+}
+
+/* After animation completes (JS removes card-revealed, adds card-entered):
+   keep visible so accordion transitions work cleanly */
+.split-container.card-entered {
+    opacity: 1;
+}
+
+.split-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    /* 🌟 【卡片点击展开速度】：修改这里的 0.6s。数值越小，点击卡片时左右展开/收缩的速度就越快 */
+    transition: clip-path 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    z-index: 1;
+}
+
+/* Default State (50/50 Split) */
+.split-left {
+    clip-path: polygon(0 0, 55% 0, 45% 100%, 0 100%);
+    background: #0d0d0d;
+}
+
+.split-right {
+    clip-path: polygon(55% 0, 100% 0, 100% 100%, 45% 100%);
+    background: #070707;
+}
+
+/* Left Active State */
+.split-container.left-active .split-left {
+    clip-path: polygon(0 0, 85% 0, 75% 100%, 0 100%);
+    z-index: 2;
+}
+
+.split-container.left-active .split-right {
+    clip-path: polygon(85% 0, 100% 0, 100% 100%, 75% 100%);
+}
+
+/* Right Active State */
+.split-container.right-active .split-left {
+    clip-path: polygon(0 0, 25% 0, 15% 100%, 0 100%);
+}
+
+.split-container.right-active .split-right {
+    clip-path: polygon(25% 0, 100% 0, 100% 100%, 15% 100%);
+    z-index: 2;
+}
+
+/* --- Card Background Patterns --- */
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.05;
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+}
+
+.split-container.left-active .split-left .card-bg,
+.split-container.right-active .split-right .card-bg {
+    opacity: 0.25;
+}
+
+/* --- Content Alignment & Center Tracking --- */
+.split-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.card-detail-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.split-container.left-active .split-left .card-detail-section,
+.split-container.right-active .split-right .card-detail-section {
+    height: 80px;
+    opacity: 1;
+    margin-top: 15px;
+}
+
+.enter-test-btn {
+    background: transparent;
+    border: 1px solid #666;
+    color: #e0e0e0;
+    padding: 8px 24px;
+    font-family: var(--monospace-font);
+    font-size: 0.8rem;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.enter-test-btn:hover:not(.disabled) {
+    background: #e0e0e0;
+    color: #000;
+}
+
+.enter-test-btn.disabled {
+    color: #555;
+    border-color: #333;
+    cursor: not-allowed;
+}
+
+/* Default Transforms (Center to visible area) */
+.split-left .split-content {
+    transform: translateX(-25%);
+}
+
+.split-right .split-content {
+    transform: translateX(25%);
+}
+
+/* Active State Transforms & Hiding Shrunk Content */
+.split-container.left-active .split-left .split-content {
+    transform: translateX(-10%);
+}
+
+.split-container.left-active .split-right .split-content {
+    transform: translateX(35%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.split-container.right-active .split-left .split-content {
+    transform: translateX(-35%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.split-container.right-active .split-right .split-content {
+    transform: translateX(10%);
+}
+
+/* --- Card Text Styles --- */
+.card-track {
+    font-size: 0.6rem;
+    color: #666;
+    letter-spacing: 4px;
+    font-family: var(--monospace-font);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+.card-title {
+    font-size: 2rem;
+    font-weight: 300 !important;
+    letter-spacing: 6px;
+    margin: 0;
+    font-family: var(--serif-font);
+    color: #b3b3b3;
+}
+
+.card-subtitle {
+    font-size: 0.8rem;
+    color: #aaa;
+    letter-spacing: 3px;
+    font-family: var(--serif-font);
+    font-weight: normal;
+    margin: 0;
+}
+
+.new-badge {
+    font-size: 0.65rem;
+    color: #e0d0a0;
+    letter-spacing: 2px;
+    font-family: var(--monospace-font);
+    vertical-align: super;
+}
+
+.new-badge-unexpanded {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: #e0d0a0;
+    letter-spacing: 2px;
+    font-family: var(--monospace-font);
+    margin-top: 5px;
+    transition: opacity 0.4s ease;
+    white-space: nowrap;
+}
+
+.split-container.right-active .split-right .new-badge-unexpanded {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* --- PPTI Morphing Geometry Canvas --- */
+.geo-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.film-edge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 15px;
+    background-image: repeating-linear-gradient(to right, transparent, transparent 15px, rgba(255, 255, 255, 0.3) 15px, rgba(255, 255, 255, 0.3) 20px);
+    background-size: 20px 100%;
+    animation: filmScroll 2s linear infinite;
+}
+
+.film-edge.bottom {
+    top: auto;
+    bottom: 0;
+}
+
+@keyframes filmScroll {
+    from {
+        background-position-x: 0;
+    }
+
+    to {
+        background-position-x: -20px;
+    }
+}
+
+.cam-focus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    opacity: 0.05;
+    transition: opacity 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+    animation: camRotate 10s linear infinite;
+    transform-origin: 50% 50%;
+}
+
+@keyframes camRotate {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+.split-container.right-active .split-right .cam-focus {
+    opacity: 0.25;
+}
+
+.hub-footer {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+
+    /* 🌟 【间距1】：修改这里的数值，控制 “卡片” 和 “更多测试敬请期待” 之间的距离 (支持 px 或 vh) */
+    margin-top: 6vh;
+
+    /* 🌟 【间距2】：修改这里的数值，控制 “更多测试敬请期待” 和最底部 “技术支持...” 等细碎文字之间的距离 */
+    gap: 0.5vh;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 600px) {
+    .hub-logo {
+        /* 🌟 手机端：在这里修改 who-ology 的大小 */
+        font-size: 2.6rem;
+        letter-spacing: 10px;
+        padding-top: 30px;
+    }
+
+    .hub-logo span {
+        letter-spacing: 6px;
+    }
+
+    .hub-manifesto {
+        /* 🌟 手机端：在这里修改中间那段话的文字大小 */
+        font-size: 0.85rem;
+        line-height: 2.5;
+        padding: 0 10px;
+    }
+
+    .split-container {
+        height: 320px;
+        /* slightly shorter on mobile */
+    }
+
+    .card-title {
+        font-size: 1.6rem;
+        letter-spacing: 4px;
+    }
+
+    .card-subtitle {
+        font-size: 0.75rem;
+    }
 }

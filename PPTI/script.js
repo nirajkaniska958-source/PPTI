@@ -78,14 +78,25 @@ document.addEventListener('DOMContentLoaded', () => {
     buildArchiveList();
 
     const lines = [
-        { text: "> 初始化临床接口...", type: 'log' },
+        { text: "> 初始化接口...", type: 'log' },
         { text: "> 正在提取灵魂切片...", type: 'log' },
         { text: "> 精神防御壁垒已识别", type: 'log' },
-        { text: "\nPPTI 系统 v1.0.42", type: 'info' },
+        { text: "\nwho-ology 系统 v2.0", type: 'info' },
         { text: "请确保在安静、私密的环境下接受观测", type: 'info' }
     ];
     startTypingSequence(lines);
+
+    if (document.getElementById('p5-canvas-container')) {
+        new p5(p5Sketch, document.getElementById('p5-canvas-container'));
+    }
 });
+
+function scrollToCards() {
+    const section = document.getElementById('test-entries-section');
+    if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
 
 function skipIntroAnimation() {
     if (document.getElementById('intro-enter-btn').style.display === 'block') return;
@@ -108,7 +119,14 @@ async function startTypingSequence(lines) {
             if (!isIntroSkipped) await new Promise(resolve => setTimeout(resolve, 400));
         }
     }
-    document.getElementById('intro-enter-btn').style.display = 'block';
+    const btn = document.getElementById('intro-enter-btn');
+    btn.style.display = 'block';
+    btn.innerText = '';
+    if (isIntroSkipped) {
+        btn.innerText = '[ 进 入 系 统 ]';
+    } else {
+        await typeLine('[ 进 入 系 统 ]', btn);
+    }
 }
 
 function typeLine(text, element) {
@@ -155,7 +173,202 @@ function enterApp() {
     setTimeout(() => {
         overlay.style.display = 'none';
         window.scrollTo(0, 0);
+        document.getElementById('hub-page').classList.add('start-animation');
+
+        // Set up card reveal observer AFTER user enters the app
+        const cardContainer = document.getElementById('hub-split-container');
+        if (cardContainer) {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        cardContainer.classList.add('card-revealed');
+                        observer.unobserve(cardContainer);
+
+                        // After animation finishes, swap to card-entered so
+                        // the accordion clip-path transitions work without interference
+                        const leftPanel = cardContainer.querySelector('.split-left');
+                        if (leftPanel) {
+                            leftPanel.addEventListener('animationend', () => {
+                                cardContainer.classList.remove('card-revealed');
+                                cardContainer.classList.add('card-entered');
+                            }, { once: true });
+                        }
+                    }
+                });
+            }, { threshold: 0.2 });
+            observer.observe(cardContainer);
+        }
     }, 800);
+
+    // Start canvas geometry animation immediately (independent of scroll)
+    // Start canvas geometry animation immediately (independent of scroll)
+    setTimeout(() => initGeoCanvas(), 900);
+}
+
+
+
+
+function initGeoCanvas() {
+    const canvas = document.getElementById('geo-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    function resize() { canvas.width = canvas.offsetWidth || 300; canvas.height = canvas.offsetHeight || 380; }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const POOL = 8;
+    const ease = t => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const lerpSeg = (a, b, t) => ({
+        dx1: lerp(a.dx1, b.dx1, t), dy1: lerp(a.dy1, b.dy1, t),
+        dx2: lerp(a.dx2, b.dx2, t), dy2: lerp(a.dy2, b.dy2, t),
+        op: lerp(a.op, b.op, t)
+    });
+
+    function createActor({ idx, seq, sizeMult, speedMult, alpha, seqOff, idleMs }) {
+        const a = {
+            seq, shapeIdx: seqOff % seq.length, idx, sizeMult, speedMult, alpha,
+            pos: { x: 0, y: 0 }, vel: { x: 0, y: 0 },
+            radiusBase: 0, radiusFrom: 0, radiusTarget: 0, radiusLerpT: 1,
+            cur: [], from: [], scattered: [], to: [],
+            phase: 'idle', phaseStart: 0,
+            T_IDLE: idleMs,
+            T_SPLIT: 800,
+            T_ASSEMBLE: 1050
+        };
+
+        a.initPhysics = function () {
+            const W = canvas.width, H = canvas.height;
+            const baseR = Math.min(W, H) * 0.28 * a.sizeMult;
+            a.radiusBase = baseR; a.radiusFrom = baseR; a.radiusTarget = baseR;
+            const R = a.radiusBase;
+            const sectors = [
+                { xMin: 0, xMax: 0.45, yMin: 0, yMax: 0.5 },
+                { xMin: 0.55, xMax: 1, yMin: 0, yMax: 0.5 },
+                { xMin: 0.2, xMax: 0.8, yMin: 0.5, yMax: 1 },
+            ];
+            const s = sectors[a.idx % sectors.length];
+            a.pos.x = R + (s.xMin * (W - 2 * R)) + Math.random() * ((s.xMax - s.xMin) * (W - 2 * R));
+            a.pos.y = R + (s.yMin * (H - 2 * R)) + Math.random() * ((s.yMax - s.yMin) * (H - 2 * R));
+            const speed = Math.min(W, H) * 0.0001 * a.speedMult;
+            const baseAng = (a.idx / 3) * Math.PI * 2;
+            const ang = baseAng + (Math.random() - 0.5) * 0.8;
+            a.vel.x = Math.cos(ang) * speed;
+            a.vel.y = Math.sin(ang) * speed;
+        };
+
+        a.makeSegsRel = function () {
+            const n = a.seq[a.shapeIdx], r = a.radiusBase;
+            return Array.from({ length: POOL }, (_, i) => {
+                if (i < n) {
+                    const a1 = (i / n) * Math.PI * 2 - Math.PI / 2;
+                    const a2 = ((i + 1) / n) * Math.PI * 2 - Math.PI / 2;
+                    return { dx1: r * Math.cos(a1), dy1: r * Math.sin(a1), dx2: r * Math.cos(a2), dy2: r * Math.sin(a2), op: 1 };
+                }
+                return { dx1: 0, dy1: 0, dx2: 0, dy2: 0, op: 0 };
+            });
+        };
+
+        a.scatterRel = function () {
+            const ang = Math.random() * Math.PI * 2;
+            const d = a.radiusBase * (0.6 + Math.random() * 1.0);
+            const mdx = Math.cos(ang) * d, mdy = Math.sin(ang) * d;
+            const len = 15 + Math.random() * 45, rot = Math.random() * Math.PI * 2;
+            return {
+                dx1: mdx + Math.cos(rot) * len / 2, dy1: mdy + Math.sin(rot) * len / 2,
+                dx2: mdx - Math.cos(rot) * len / 2, dy2: mdy - Math.sin(rot) * len / 2, op: 0.3
+            };
+        };
+
+        a.updatePhysics = function (dt, W, H, allowBreathing) {
+            a.pos.x += a.vel.x * dt; a.pos.y += a.vel.y * dt;
+            const R = a.radiusBase;
+            if (a.pos.x - R < 0) { a.pos.x = R; a.vel.x = Math.abs(a.vel.x); }
+            if (a.pos.x + R > W) { a.pos.x = W - R; a.vel.x = -Math.abs(a.vel.x); }
+            if (a.pos.y - R < 0) { a.pos.y = R; a.vel.y = Math.abs(a.vel.y); }
+            if (a.pos.y + R > H) { a.pos.y = H - R; a.vel.y = -Math.abs(a.vel.y); }
+            if (allowBreathing) {
+                a.radiusLerpT = Math.min(a.radiusLerpT + dt * 0.0003, 1);
+                a.radiusBase = lerp(a.radiusFrom, a.radiusTarget, ease(a.radiusLerpT));
+                if (a.radiusLerpT >= 1) {
+                    const base = Math.min(W, H) * 0.28 * a.sizeMult;
+                    a.radiusFrom = a.radiusBase;
+                    a.radiusTarget = base * (0.65 + Math.random() * 0.65);
+                    a.radiusLerpT = 0;
+                }
+            }
+        };
+
+        a.init = function (ts) {
+            a.initPhysics();
+            a.cur = a.makeSegsRel();
+            a.phase = 'idle';
+            a.phaseStart = ts - Math.random() * a.T_IDLE;
+        };
+
+        a.tick = function (ts, dt, W, H) {
+            const isIdle = a.phase === 'idle';
+            a.updatePhysics(dt, W, H, isIdle);
+            const elapsed = ts - a.phaseStart;
+            let segs;
+            if (isIdle) {
+                a.cur = a.makeSegsRel();
+                segs = a.cur;
+                if (elapsed > a.T_IDLE) {
+                    a.from = a.cur.map(s => ({ ...s }));
+                    a.scattered = a.cur.map(s => s.op > 0 ? a.scatterRel() : { ...s, op: 0 });
+                    a.phase = 'split'; a.phaseStart = ts;
+                }
+            } else if (a.phase === 'split') {
+                const t = ease(Math.min(elapsed / a.T_SPLIT, 1));
+                segs = a.from.map((s, i) => lerpSeg(s, a.scattered[i], t));
+                if (elapsed >= a.T_SPLIT) {
+                    a.shapeIdx = (a.shapeIdx + 1) % a.seq.length;
+                    a.to = a.makeSegsRel();
+                    a.from = a.scattered.map(s => ({ ...s }));
+                    a.phase = 'assemble'; a.phaseStart = ts;
+                }
+            } else {
+                const t = ease(Math.min(elapsed / a.T_ASSEMBLE, 1));
+                segs = a.from.map((s, i) => lerpSeg(s, a.to[i], t));
+                if (elapsed >= a.T_ASSEMBLE) {
+                    a.cur = a.to.map(s => ({ ...s }));
+                    a.phase = 'idle'; a.phaseStart = ts;
+                }
+            }
+            const cx = a.pos.x, cy = a.pos.y;
+            segs.forEach(s => {
+                if (s.op < 0.01) return;
+                ctx.beginPath();
+                ctx.moveTo(cx + s.dx1, cy + s.dy1);
+                ctx.lineTo(cx + s.dx2, cy + s.dy2);
+                ctx.strokeStyle = `rgba(255,255,255,${((0.10 + 0.10 * s.op) * a.alpha).toFixed(3)})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+        };
+        return a;
+    }
+
+    const actors = [
+        createActor({ idx: 0, seq: [3, 4, 5, 6, 7, 8, 3, 4, 5, 6, 7, 8], sizeMult: 1, speedMult: 0.8, alpha: 1.0, seqOff: 0, idleMs: 10000 }),
+        createActor({ idx: 1, seq: [7, 8, 3, 4, 5, 6, 7, 8, 3, 4, 5, 6], sizeMult: 0.9, speedMult: 0.7, alpha: 0.8, seqOff: 4, idleMs: 10000 }),
+        createActor({ idx: 2, seq: [5, 6, 7, 8, 3, 4, 5, 6, 7, 8, 3, 4], sizeMult: 0.80, speedMult: 0.6, alpha: 0.6, seqOff: 8, idleMs: 10000 }),
+    ];
+
+    const now = performance.now();
+    actors.forEach(a => a.init(now));
+    let lastTs = null;
+    function frame(ts) {
+        const W = canvas.width, H = canvas.height;
+        const dt = lastTs ? Math.min(ts - lastTs, 50) : 16;
+        lastTs = ts;
+        ctx.clearRect(0, 0, W, H);
+        actors.forEach(a => a.tick(ts, dt, W, H));
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
 }
 
 function setMode(selectedMode, btnElement) {
@@ -165,7 +378,7 @@ function setMode(selectedMode, btnElement) {
 }
 
 function startQuiz() {
-    document.getElementById('landing-page').classList.remove('active');
+    document.getElementById('ppti-intro-page').classList.remove('active');
     document.getElementById('quiz-page').classList.add('active');
     showQuestion();
     window.scrollTo(0, 0);
@@ -327,7 +540,8 @@ function restartQuiz() {
     if (analyzingOverlay) analyzingOverlay.style.display = 'none';
 
     document.getElementById('result-page').classList.remove('active');
-    document.getElementById('landing-page').classList.add('active');
+    // 🌟 修正：重新确诊应回到 PPTI 的介绍页，而不是 Hub 主页
+    document.getElementById('ppti-intro-page').classList.add('active');
     window.scrollTo(0, 0);
 }
 
@@ -388,7 +602,8 @@ function injectDynamicData(type) {
 }
 
 function renderResultView(resultType, scores) {
-    document.getElementById('landing-page').classList.remove('active');
+    document.getElementById('hub-page').classList.remove('active');
+    document.getElementById('ppti-intro-page').classList.remove('active');
     document.getElementById('quiz-page').classList.remove('active');
     document.getElementById('result-page').classList.add('active');
     window.scrollTo(0, 0);
@@ -860,3 +1075,245 @@ async function likeComment(commentId) {
         console.error("信号微弱，未传达至系统", e);
     }
 }
+
+// ==========================================
+// 🌟 导航与 P5.js Hub 背景逻辑
+// ==========================================
+
+let currentSplitState = 'default'; // 'default', 'left', 'right'
+
+function handleSplitClick(side, event) {
+    const container = document.getElementById('hub-split-container');
+
+    if (currentSplitState === 'default') {
+        currentSplitState = side;
+        container.classList.remove('left-active', 'right-active');
+        container.classList.add(`${side}-active`);
+    } else if (currentSplitState === side) {
+        // If they click the expanded side again, do nothing.
+    } else {
+        // Clicked the shrunk side, reset
+        currentSplitState = 'default';
+        container.classList.remove('left-active', 'right-active');
+    }
+}
+
+// 点击空白处复原卡片
+document.addEventListener('click', (e) => {
+    const container = document.getElementById('hub-split-container');
+    if (container && !container.contains(e.target)) {
+        if (currentSplitState !== 'default') {
+            currentSplitState = 'default';
+            container.classList.remove('left-active', 'right-active');
+        }
+    }
+});
+
+function goToPPTIIntro(event) {
+    if (event) event.stopPropagation();
+    
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('ppti-intro-page').classList.add('active');
+    window.scrollTo(0, 0);
+
+    // 🌟 核心改进：只有当前状态不是 ppti-intro 时才 push，防止重复堆叠历史记录
+    if (!history.state || history.state.page !== 'ppti-intro') {
+        history.pushState({ page: 'ppti-intro' }, '', '#ppti');
+    }
+}
+
+function goToHub() {
+    // 🌟 核心改进：点击按钮时，直接强制切换 UI 状态并清除 hash，
+    // 这样能解决“按了没反应”的问题，同时确保浏览器历史依然能对上。
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('hub-page').classList.add('active');
+    window.scrollTo(0, 0);
+
+    if (history.state && history.state.page === 'ppti-intro') {
+        // 如果是按了物理返回键之外的屏幕按钮，我们依然同步一下历史
+        history.replaceState(null, '', window.location.pathname);
+    }
+}
+
+function goToLSTI() {
+    // 占位功能，不做响应
+}
+
+// 监听手机返回键或浏览器后退
+window.addEventListener('popstate', (e) => {
+    // If we are retreating to the hub (no state or different state)
+    if (!e.state || e.state.page !== 'ppti-intro') {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('hub-page').classList.add('active');
+        window.scrollTo(0, 0);
+    } else if (e.state.page === 'ppti-intro') {
+        // If we are somehow moving forward back to ppti intro
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.getElementById('ppti-intro-page').classList.add('active');
+        window.scrollTo(0, 0);
+    }
+});
+
+// ─── Hero 背景：深渊涡旋（GLSL 着色器版）───────────────────────────────────────
+// 使用 WebGL Shader 实现真正的油画流体质感、慢镜头张合、极度丝滑
+const p5Sketch = (s) => {
+    let theShader;
+
+    const vert = `
+    attribute vec3 aPosition;
+    attribute vec2 aTexCoord;
+    varying vec2 vTexCoord;
+    void main() {
+        vTexCoord = aTexCoord;
+        gl_Position = vec4(aPosition, 1.0);
+    }`;
+
+    const frag = `
+    precision highp float;
+    varying vec2 vTexCoord;
+    uniform vec2 u_resolution;
+    uniform float u_time;
+
+    // 随机函数
+    float hash(vec2 p) {
+        p = fract(p * vec2(234.34, 435.345));
+        p += dot(p, p + 34.23);
+        return fract(p.x * p.y);
+    }
+
+    // 2D 噪声
+    float noise(vec2 p) {
+        vec2 i = floor(p);
+        vec2 f = fract(p);
+        vec2 u = f * f * (3.0 - 2.0 * f);
+        return mix(mix(hash(i + vec2(0.0, 0.0)), hash(i + vec2(1.0, 0.0)), u.x),
+                   mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+    }
+
+    // FBM (分形布朗运动)
+    float fbm(vec2 p) {
+        float value = 0.0;
+        float amp = 0.5;
+        // 手机端优化：把 6 次循环砍到 3 次，因为手机上不需要那么多微小细节。
+        // 这将直接减少一半以上的显卡计算量！
+        for (int i = 0; i < 3; i++) {
+            value += amp * noise(p);
+            p *= 2.0;
+            amp *= 0.5;
+        }
+        return value;
+    }
+
+    void main() {
+        // 归一化并让中心偏下
+        vec2 uv = vTexCoord;
+        vec2 p = uv * 2.0 - 1.0;
+        
+        // 【关键改动：放大视觉范围】
+        // 缩小坐标轴相当于将整个漩涡“拉近、放大”，让它的边缘能够覆盖到屏幕上方和下方的文字区域
+        p *= 0.55; 
+        
+        p.y += 0.08; 
+        p.x *= u_resolution.x / u_resolution.y;
+
+        // 极缓慢的时间
+        float t = u_time * 0.2; 
+
+        // 极地坐标
+        float r = length(p);
+        float angle = atan(p.y, p.x);
+
+        // 模拟极其巨大的眼睛（基于椭圆距离）
+        // 极其缓慢地张开、闭合 (利用 sin(t))
+        float eyeOpen = 0.6 + 0.15 * sin(t * 0.8); 
+        float eyeDist = length(vec2(p.x, p.y / eyeOpen));
+
+        // 涡旋扰动 (慢镜头下的流动)
+        float swirlAmt = 1.5 * exp(-r * 2.0); // 靠近中心旋转更强
+        angle += swirlAmt * sin(t * 0.5);
+        vec2 swp = vec2(r * cos(angle), r * sin(angle));
+
+        // 流体和抽象笔触层叠 (使用不同尺度的 FBM)
+        // 保留原汁原味的三层叠加，这是高级飘逸感的来源，绝不删减这一块！
+        vec2 q = vec2(0.);
+        q.x = fbm(swp * 3.5 + vec2(t * 0.1, t * 0.2));
+        q.y = fbm(swp * 3.5 + vec2(t * 0.3, t * 0.1));
+
+        vec2 r2 = vec2(0.);
+        r2.x = fbm(swp * 6.0 + q * 2.0 + vec2(t * 0.4, 0.0));
+        r2.y = fbm(swp * 6.0 + q * 2.0 + vec2(0.0, t * 0.5));
+
+        float f = fbm(swp * 4.5 + r2 * 2.0);
+
+        // 深渊的层次感
+        // 让中心保留 50% 的油画纹理，不再空荡荡！
+        float depth = 0.5 + 0.5 * smoothstep(0.0, 1.2, eyeDist);
+        
+        // 光：边缘偶有一缕微弱的光游走
+        // 利用角度和时间生成游走的光晕
+        float lightWalk = smoothstep(0.8, 0.95, sin(angle * 2.0 - t * 2.0));
+        float lightEdge = smoothstep(0.4, 0.6, f) * smoothstep(0.8, 0.6, f); // 取山脊部分
+        float lightIntensity = lightEdge * lightWalk * smoothstep(0.2, 0.8, eyeDist) * exp(-eyeDist*1.5);
+
+        // 混合颜色：大面积黑灰色与深灰色
+        // 中心为纯黑 (0.01)，边缘稍微过渡到深灰 (0.12)
+        vec3 darkGrey = vec3(0.12, 0.12, 0.13);
+        vec3 blackGrey = vec3(0.02, 0.02, 0.02);
+        
+        vec3 color = mix(blackGrey, darkGrey, f * depth);
+        
+        // 加上游走的光（深灰色光）
+        vec3 lightColor = vec3(0.25, 0.25, 0.27);
+        color += lightColor * lightIntensity * 0.4;
+
+        // 背景边缘彻底融入黑 (也放大遮罩边缘，让漩涡布满全屏)
+        float mask = smoothstep(2.5, 0.8, eyeDist);
+        color *= mask;
+
+        // 🌟 【首页噪点强度】：修改这里的 0.01。数值越小噪点越弱，0 代表完全关闭（目前已调低）。
+        float grain = hash(uv * vec2(100.0, 100.0) + t);
+        color += (grain - 0.5) * 0.01;
+
+        gl_FragColor = vec4(color, 1.0);
+    }`;
+
+    s.setup = () => {
+        const cont = document.getElementById('p5-canvas-container');
+        const cnv  = s.createCanvas(
+            cont ? cont.offsetWidth  : s.windowWidth,
+            cont ? cont.offsetHeight : s.windowHeight,
+            s.WEBGL
+        );
+        if (cont) cnv.parent('p5-canvas-container');
+        
+        // 【核心优化】：将手机端像素密度压到 0.5
+        if (s.windowWidth < 768) {
+            s.pixelDensity(0.5); 
+        } else {
+            s.pixelDensity(1.0);
+        }
+        
+        theShader = s.createShader(vert, frag);
+        s.noStroke();
+    };
+
+    s.draw = () => {
+        s.shader(theShader);
+        theShader.setUniform('u_resolution', [s.width, s.height]);
+        theShader.setUniform('u_time', s.millis() / 1000.0);
+        
+        // 画一个覆盖全屏的矩形面来跑 Shader
+        s.beginShape();
+        s.vertex(-1, -1, 0, 0, 0);
+        s.vertex( 1, -1, 0, 1, 0);
+        s.vertex( 1,  1, 0, 1, 1);
+        s.vertex(-1,  1, 0, 0, 1);
+        s.endShape(s.CLOSE);
+    };
+
+    s.windowResized = () => {
+        const cont = document.getElementById('p5-canvas-container');
+        if (!cont) return;
+        s.resizeCanvas(cont.offsetWidth, cont.offsetHeight);
+    };
+};

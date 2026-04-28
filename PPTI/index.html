@@ -8,17 +8,18 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#FAF9F6">
-    
+
     <meta name="apple-mobile-web-app-title" content="PPTI">
-    
+
     <link rel="apple-touch-icon" href="images/apple-icon.png">
-    
+
     <link rel="icon" href="images/apple-icon.png" type="image/png">
-    
+
     <title>who-ology [ PPTI ]</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/p5.min.js"></script>
 </head>
 
 <body>
@@ -27,13 +28,13 @@
             <div id="terminal-screen"></div>
             <button id="intro-enter-btn" class="enter-btn" onclick="event.stopPropagation(); enterApp()"
                 style="display: none;">
-                [ ACCESS SYSTEM ]
+                [ 进 入 系 统 ]
             </button>
         </div>
     </div>
 
     <div id="app">
-        <div id="analyzing-overlay" 
+        <div id="analyzing-overlay"
             style="display: none; height: 100dvh; flex-direction: column; align-items: center; justify-content: center; background-color: var(--bg-color);">
             <div class="animated-lines" style="margin-bottom: 20px;">
                 <div class="line line-1" style="background-color: #111;"></div>
@@ -46,7 +47,69 @@
             </p>
         </div>
 
-        <section id="landing-page" class="view active">
+        <section id="hub-page" class="view active hub-view">
+            <div id="p5-canvas-container"></div>
+            <div class="hub-hero">
+                <div class="hub-logo">who-ology<br><span style="font-size: 0.8rem; letter-spacing: 8px;">人 类 精 神 图
+                        鉴</span>
+                </div>
+                <h1 class="hub-manifesto">剥离身份与皮囊<br>我们在灵魂中确认彼此的精神底色</h1>
+                <div class="scroll-indicator" onclick="scrollToCards()">
+                    <span class="scroll-text">点击下滑</span>
+                    <div class="scroll-arrow"></div>
+                </div>
+            </div>
+
+            <div class="test-entries-section" id="test-entries-section">
+                <div class="split-container" id="hub-split-container">
+                    <div class="split-panel split-left" onclick="handleSplitClick('left', event)">
+                        <div class="card-bg">
+                            <canvas class="geo-canvas" id="geo-canvas"></canvas>
+                        </div>
+                        <div class="split-content">
+                            <div class="card-track">Track A</div>
+                            <h2 class="card-title">PPTI</h2>
+                            <div class="card-detail-section">
+                                <h3 class="card-subtitle">你的哲学人格</h3>
+                                <button class="enter-test-btn" onclick="goToPPTIIntro(event)">[ 开启测试 ]</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="split-panel split-right" onclick="handleSplitClick('right', event)">
+                        <div class="card-bg">
+                            <div class="film-edge"></div>
+                            <div class="film-edge bottom"></div>
+                        </div>
+                        <div class="split-content">
+                            <div class="cam-focus"></div>
+                            <div class="card-track">Track B</div>
+                            <h2 class="card-title" style="position: relative; color: #b3b3b3;">
+                                LSTI
+                                <div class="new-badge-unexpanded">[NEW]</div>
+                            </h2>
+                            <div class="card-detail-section">
+                                <h3 class="card-subtitle">你的人生剧本</h3>
+                                <button class="enter-test-btn disabled" onclick="event.stopPropagation()">[ 敬请期待
+                                    ]</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hub-footer">
+                    <p class="quiet-reminder">更多测试敬请期待<br>欢迎关注催更</p>
+                    <div class="footer-line" style="background-color: #333;"></div>
+                    <div class="footer-info">
+                        <p>技术支持: who-ology</p>
+                        <p>© 2026 who-ology · Created by Gemini</p>
+                        <p>原创作品 · 抄袭必究</p>
+                        <p>小红书 · @who-ology</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="ppti-intro-page" class="view">
             <header class="clinical-header">
                 <span>SESSION-ID: <span id="session-id"></span></span>
                 <span>who-ology</span>
@@ -105,6 +168,8 @@
 
                 <div class="landing-footer">
                     <p class="quiet-reminder">请沉下心来，认真回答</p>
+                    <button class="secondary-btn" style="margin-top: 15px; border:none;" onclick="goToHub()">[ 返回首页
+                        ]</button>
                     <div class="footer-line"></div>
                     <div class="footer-info">
                         <p>技术支持: who-ology</p>
@@ -247,7 +312,7 @@
                     </div>
                     <p
                         style="font-size: 0.75rem; color: #888; font-style: italic; margin: 12px 0 20px 0; letter-spacing: 1px; text-align:center;">
-                        *带着你的病历卡，<br>回小红书寻找与你共振的灵魂吧*</p>
+                        *带着你的病历卡*<br>*回小红书寻找与你共振的灵魂吧*</p>
 
                     <button class="secondary-btn" onclick="openArchiveModal()">[ 查阅完整精神图鉴 ]</button>
                     <button type="button" onclick="restartQuiz()" class="restart-link">[ 重新确诊 ]</button>
